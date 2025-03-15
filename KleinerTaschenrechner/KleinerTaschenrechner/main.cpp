@@ -44,7 +44,7 @@ Compilat compile(std::string formel) {
 
 		//parse numbers
 		float number = 0;
-		number += c - '0';
+		number += c - '0';		// achtung dürfen nur ziffern sein
 		while(currentIndex < formel.size()) {
 			c = formel[currentIndex];
 
@@ -68,7 +68,7 @@ float calculate(Compilat compilat) {
 	tokenCopy.reserve(compilat.tokens.size());
 	for (Token* token : compilat.tokens) tokenCopy.push_back(token);
 
-	for (uint16_t currentPrio = compilat.highestPrio; currentPrio < 0xFFFF; currentPrio--) {
+	for (uint16_t currentPrio = compilat.highestPrio; currentPrio < 0xFFFF; currentPrio--) {	//0xFFFF größte zahil in uint16_t
 		for (uint16_t i = 0; i < tokenCopy.size(); i++) {
 			Token* token = tokenCopy[i];
 			if (token->priority != currentPrio)
@@ -81,7 +81,7 @@ float calculate(Compilat compilat) {
 				Number* right = (Number*)tokenCopy[i + 1];
 				left->value = left->value + right->value;
 				offset = 0;
-				used = 0;
+				used = 2;
 			}
 
 			for (uint16_t j = i + offset; j < tokenCopy.size() - used; j++)
