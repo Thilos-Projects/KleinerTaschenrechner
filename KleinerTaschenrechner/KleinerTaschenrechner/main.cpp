@@ -11,6 +11,7 @@ struct Token {
 		mult,		// *
 		div,		// /
 		sin,		// sin
+		fac,		// !
 	};
 	Type type;
 	uint16_t priority;
@@ -28,6 +29,16 @@ struct Compilat {
 	Compilat() : highestPrio(0) {}
 };
 
+float fac(float input) {
+	if (input <= 1) {
+		return input;
+	}
+	else
+	{
+		return input * fac(input-1);
+	}
+}
+
 Compilat compile(std::string formel) {
 	Compilat toRet;
 	uint16_t currentIndex = 0;
@@ -41,6 +52,8 @@ Compilat compile(std::string formel) {
 		if (c == ' ')
 			continue;
 
+		//brackets
+
 		if (c == '(') {
 			currentPrio+= maxPrio;
 			
@@ -53,7 +66,7 @@ Compilat compile(std::string formel) {
 			continue;
 		}
 
-
+		// sinus
 		if (formel.size() - currentIndex > 1) {
 			if (c == 's' && formel[currentIndex] == 'i' && formel[currentIndex+1] == 'n') {
 				toRet.tokens.push_back(new Token(Token::Type::sin, currentPrio + 2));
@@ -87,6 +100,13 @@ Compilat compile(std::string formel) {
 
 		if (c == '/') {
 			toRet.tokens.push_back(new Token(Token::Type::div, currentPrio + 1));
+			if (highestPrio < currentPrio + 1)
+				highestPrio = currentPrio + 1;
+			continue;
+		}
+
+		if (c == '!') {
+			toRet.tokens.push_back(new Token(Token::Type::fac, currentPrio + 1));
 			if (highestPrio < currentPrio + 1)
 				highestPrio = currentPrio + 1;
 			continue;
@@ -173,6 +193,16 @@ float calculate(Compilat compilat) {
 				used = 2;
 			}
 
+			if (token->type == Token::Type::fac) {
+				Number* me = new Number(0);
+				Number* right = (Number*)tokenCopy[i + 1];
+				tokenCopy[i] = me;
+				me->value = fac(right->value);
+				offset = 1;
+				used = 1;
+				toDel.push_back(me);
+			}
+
 			for (uint16_t j = i + offset; j < tokenCopy.size() - used; j++)
 				tokenCopy[j] = tokenCopy[j + used];
 			tokenCopy.resize(tokenCopy.size() - used);
@@ -188,7 +218,7 @@ float calculate(Compilat compilat) {
 }
 
 int main() {
-	std::string formel = "2+sin10";
+	std::string formel = "sin100";
 	Compilat compilat = compile(formel);
 	float result = calculate(compilat);
 	return 0;
