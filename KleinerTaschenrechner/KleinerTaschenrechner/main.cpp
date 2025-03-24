@@ -72,6 +72,7 @@ Compilat compile(std::string formel) {
 				toRet.tokens.push_back(new Token(Token::Type::sin, currentPrio + 2));
 				if (highestPrio < currentPrio + 2)
 					highestPrio = currentPrio + 2;
+				currentIndex += 2;
 				continue;
 			}
 		}
@@ -194,11 +195,11 @@ float calculate(Compilat compilat) {
 			}
 
 			if (token->type == Token::Type::fac) {
+				Number* left = (Number*)tokenCopy[i - 1];
 				Number* me = new Number(0);
-				Number* right = (Number*)tokenCopy[i + 1];
 				tokenCopy[i] = me;
-				me->value = fac(right->value);
-				offset = 1;
+				left->value = fac(left->value);
+				offset = 0;
 				used = 1;
 				toDel.push_back(me);
 			}
@@ -218,7 +219,7 @@ float calculate(Compilat compilat) {
 }
 
 int main() {
-	std::string formel = "sin100";
+	std::string formel = "5!+23";
 	Compilat compilat = compile(formel);
 	float result = calculate(compilat);
 	return 0;
