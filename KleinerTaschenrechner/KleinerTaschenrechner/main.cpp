@@ -127,6 +127,14 @@ Compilat compile(std::string formel) {
 			continue;
 		}
 
+		//brackets
+
+		if (c == '(') {
+			currentPrio+= maxPrio;
+			
+			continue;
+		}
+
 		if (c == ')') {
 			currentPrio -= maxPrio;
 			
@@ -207,6 +215,13 @@ Compilat compile(std::string formel) {
 		}
 		*/
 
+		if (c == '!') {
+			toRet.tokens.push_back(new Token(Token::Type::fac, currentPrio + 1));
+			if (highestPrio < currentPrio + 1)
+				highestPrio = currentPrio + 1;
+			continue;
+		}
+
 		//parse numbers
 		float number = 0;
 		number += c - '0';		// achtung dürfen nur ziffern sein
@@ -238,6 +253,9 @@ float calculate(Compilat compilat) {
 		for (uint16_t i = 0; i < tokenCopy.size(); i++) {
 			Compilat::InternToken token = tokenCopy[i];
 			if (token.priority != currentPrio)
+				continue;
+
+			if (token->type == Token::Type::number)
 				continue;
 
 			uint16_t offset = 0;
