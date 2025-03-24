@@ -39,6 +39,20 @@ float fac(float input) {
 	}
 }
 
+struct TokenTyp {
+	std::string trennzeichen;
+	TokenTyp(std::string temp) : trennzeichen(temp) {
+
+	}
+	virtual void calculate()=0;
+};
+
+struct AddToken :public TokenTyp {
+	AddToken() :TokenTyp("+") {
+
+	}
+};
+
 Compilat compile(std::string formel) {
 	Compilat toRet;
 	uint16_t currentIndex = 0;
